@@ -16,15 +16,20 @@ public:
     Matrix(int r, int c);
     ~Matrix();
     Matrix(const Matrix &m);
+
     void print() const;
+
     void setValue(int x, int y, T value);
     T getValue(int x, int y) const;
 
-    Matrix<T> transpose() const;
-    Matrix<T> operator*(const Matrix& m) const;
-
     Matrix<T> selectRow(int x);
     Matrix<T> selectColumn(int y);
+    int getRow() const;
+    int getColumn() const;
+
+    Matrix<T> transpose() const;
+    Matrix<T> operator*(const Matrix& m) const;
+    Matrix<T> &operator*(const T num);
 };
 
 template<typename T>
@@ -53,7 +58,7 @@ Matrix<T>::Matrix(const Matrix<T> &m) {
 
     buffer = new T[rows * columns];
 
-    //inizialize second matrix for operations
+    //inizialize the second matrix for operations
     for (int i = 0; i < rows * columns; i++)
         buffer[i] = m.buffer[i];
 }
@@ -91,8 +96,50 @@ T Matrix<T>::getValue(int x, int y) const {
 }
 
 template<typename T>
+Matrix<T> Matrix<T>::selectRow(int x) {
+    //creates a matrix with one row
+    Matrix rowMatrix(1, columns);
+    if(x >= 0 and x < rows){
+        for(int j = 0; j < columns; j++){
+            rowMatrix.buffer[j] = buffer[x*columns + j];
+        }
+        //return the row x
+        return rowMatrix;
+    } else { //return error if x exceeded range rows
+        throw std::out_of_range("range exceeded.");
+    }
+}
+
+template<typename T>
+Matrix<T> Matrix<T>::selectColumn(int y) {
+    //creates a matrix with one column
+    Matrix columnMatrix(rows, 1);
+    if(y >= 0 and y < columns){
+        for(int i = 0; i < rows; i++){
+            columnMatrix.buffer[i] = buffer[i*columns + y];
+        }
+        //return the column y
+        return columnMatrix;
+    } else { //return error if y exceeded range columns
+        throw std::out_of_range("range exceeded.");
+    }
+}
+
+template<typename T>
+int Matrix<T>::getRow() const {
+    //return rows' number of the matrix
+    return rows;
+}
+
+template<typename T>
+int Matrix<T>::getColumn()const {
+    //return columns' number of the matrix
+    return columns;
+}
+
+template<typename T>
 Matrix<T> Matrix<T>::transpose() const{
-    //creates a transposed matrix
+    //creates the transposed matrix
     Matrix<T> transposedMatrix(columns, rows);
     for(int i = 0; i < rows; i++){
         for(int j = 0; j < columns; j++){
@@ -126,33 +173,11 @@ Matrix<T> Matrix<T>::operator*(const Matrix<T> &m) const{
 }
 
 template<typename T>
-Matrix<T> Matrix<T>::selectRow(int x) {
-    //creates a matrix with one row
-    Matrix rowMatrix(1, columns);
-    if(x >= 0 and x < rows){
-        for(int j = 0; j < columns; j++){
-            rowMatrix.buffer[j] = buffer[x*columns + j];
-        }
-        //return the row x
-        return rowMatrix;
-    } else { //return error if x exceeded range rows
-        throw std::out_of_range("range exceeded.");
+Matrix<T> &Matrix<T>::operator*(const T num) {
+    //scalar product between matrix and scalar number
+    for(int i = 0; i < rows*columns; i++){
+        buffer[i] = num*buffer[i];
     }
+    return *this;
 }
-
-template<typename T>
-Matrix<T> Matrix<T>::selectColumn(int y) {
-    //creates a matrix with one column
-    Matrix columnMatrix(rows, 1);
-    if(y >= 0 and y < columns){
-        for(int i = 0; i < rows; i++){
-            columnMatrix.buffer[i] = buffer[i*columns + y];
-        }
-        //return the column y
-        return columnMatrix;
-    } else { //return error if y exceeded range columns
-        throw std::out_of_range("range exceeded.");
-    }
-}
-
 #endif //MATRIX_MATRIX_H
