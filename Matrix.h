@@ -4,6 +4,7 @@
 
 #ifndef MATRIX_MATRIX_H
 #define MATRIX_MATRIX_H
+#include <iostream>
 #include <stdexcept>
 
 template<typename T>
@@ -17,9 +18,9 @@ public:
     ~Matrix();
     Matrix(const Matrix &m);
 
-    void print() const;
+    std::string toString() const;
 
-    void setValue(int x, int y, T value);
+    void setValue(int x, int y, const T& value) const;
     T getValue(int x, int y) const;
 
     Matrix<T> selectRow(int x);
@@ -28,8 +29,10 @@ public:
     int getColumn() const;
 
     Matrix<T> transpose() const;
+    Matrix<T> operator=(const Matrix& m) const;
     Matrix<T> operator*(const Matrix& m) const;
-    Matrix<T> &operator*(const T num);
+    Matrix<T> operator*(const T& num) const;
+    Matrix<T> operator+(const Matrix& m) const;
 };
 
 template<typename T>
@@ -64,19 +67,22 @@ Matrix<T>::Matrix(const Matrix<T> &m) {
 }
 
 template<typename T>
-void Matrix<T>::print() const {
+std::string Matrix<T>::toString() const {
     //print the matrix
-    for(int i = 0; i < rows; i++) {
-        for(int j = 0; j < columns; j++) {
-            std::cout << buffer[i*columns + j] << " ";
+    std::string matrix;
+    for(int i = 0; i < rows; i++){
+        for(int j = 0; j < columns; j++){
+            matrix += std::to_string(buffer[i*columns + j]) + " ";
         }
-        std::cout << std::endl;
+        matrix += "\n";
     }
-    std::cout << std::endl;
+    matrix += "\n";
+    std::cout << matrix;
+    return matrix;
 }
 
 template<typename T>
-void Matrix<T>::setValue(int x, int y, T value) {
+void Matrix<T>::setValue(int x, int y, const T &value) const {
     //set the value in position (x,y)
     if(x >= 0 && x < rows && y >= 0 && y < columns){
         buffer[x*columns + y] = value;
@@ -151,6 +157,20 @@ Matrix<T> Matrix<T>::transpose() const{
 }
 
 template<typename T>
+Matrix<T> Matrix<T>::operator=(const Matrix<T> &m) const {
+    if(this != &m){
+        if(rows == m.rows && columns == m.columns){
+            for(int i = 0; i < rows*columns; i++){
+                buffer[i] = m.buffer[i];
+            }
+        } else{
+            throw std::domain_error("rows and columns don't match.");
+        }
+    }
+    return *this;
+}
+
+template<typename T>
 Matrix<T> Matrix<T>::operator*(const Matrix<T> &m) const{
     //checks the condition for the product between matrices
     if(columns == m.rows){
@@ -173,11 +193,28 @@ Matrix<T> Matrix<T>::operator*(const Matrix<T> &m) const{
 }
 
 template<typename T>
-Matrix<T> &Matrix<T>::operator*(const T num) {
+Matrix<T> Matrix<T>::operator*(const T &num) const{
     //scalar product between matrix and scalar number
+    Matrix<T> scalarProductMatrix(rows, columns);
     for(int i = 0; i < rows*columns; i++){
-        buffer[i] = num*buffer[i];
+        scalarProductMatrix.buffer[i] = num*buffer[i];
     }
-    return *this;
+    return scalarProductMatrix;
 }
+
+template<typename T>
+Matrix<T> Matrix<T>::operator+(const Matrix &m) const {
+    //checks the condition for the sum between matrices
+    if(rows == m.rows && columns== m.columns){
+        //creates a sum matrix
+        Matrix<T> sumMatrix(rows, columns);
+        for(int i = 0; i < rows*columns; i++) {
+            sumMatrix.buffer[i] = buffer[i] + m.buffer[i];
+        }
+        return sumMatrix;
+    } else { //returns error if the condition of the product between matrices is not respected
+        throw std::logic_error("in the sum, the order of the matrices must be the same.");
+    }
+}
+
 #endif //MATRIX_MATRIX_H
