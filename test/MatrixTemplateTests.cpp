@@ -130,16 +130,12 @@ TEST(MatrixTemplate, OperatoreAssegnazione) {
     A.setValue(3, 0, 9);
     A.setValue(3, 1, 6);
 
-    Matrix<int> B(4, 2);
+    Matrix<int> B(A);
     B = A;
 
     ASSERT_EQ(3, B.getValue(0, 1));
     ASSERT_EQ(9, B.getValue(3, 0));
     ASSERT_EQ(0, B.getValue(1, 0));
-
-    //test condition of  assignment matrices
-    Matrix<int> C(2,2);
-    ASSERT_THROW(C = A, std::domain_error);
 }
 
 TEST(MatrixTemplate, OperatoreMoltiplicazione) {

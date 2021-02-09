@@ -20,7 +20,7 @@ public:
 
     std::string toString() const;
 
-    void setValue(int x, int y, const T& value) const;
+    void setValue(int x, int y, const T& value);
     T getValue(int x, int y) const;
 
     Matrix<T> selectRow(int x);
@@ -29,7 +29,7 @@ public:
     int getColumn() const;
 
     Matrix<T> transpose() const;
-    Matrix<T> operator=(const Matrix& m) const;
+    Matrix<T> operator=(const Matrix& m);
     Matrix<T> operator*(const Matrix& m) const;
     Matrix<T> operator*(const T& num) const;
     Matrix<T> operator+(const Matrix& m) const;
@@ -82,7 +82,7 @@ std::string Matrix<T>::toString() const {
 }
 
 template<typename T>
-void Matrix<T>::setValue(int x, int y, const T &value) const {
+void Matrix<T>::setValue(int x, int y, const T &value) {
     //set the value in position (x,y)
     if(x >= 0 && x < rows && y >= 0 && y < columns){
         buffer[x*columns + y] = value;
@@ -157,15 +157,15 @@ Matrix<T> Matrix<T>::transpose() const{
 }
 
 template<typename T>
-Matrix<T> Matrix<T>::operator=(const Matrix<T> &m) const {
-    if(this != &m){
-        if(rows == m.rows && columns == m.columns){
-            for(int i = 0; i < rows*columns; i++){
-                buffer[i] = m.buffer[i];
-            }
-        } else{
-            throw std::domain_error("rows and columns don't match.");
-        }
+Matrix<T> Matrix<T>::operator=(const Matrix<T> &m) {
+    if (&m != this) {
+        rows = m.rows;
+        columns = m.columns;
+        delete[] buffer;
+        buffer = new T[rows * columns];
+        for (int i = 0; i < rows * columns; i++)
+            buffer[i] = m.buffer[i];
+        return *this;
     }
     return *this;
 }
