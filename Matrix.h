@@ -16,7 +16,9 @@ private:
 public:
     Matrix(int r, int c);
     ~Matrix();
+    void copy(const Matrix &m);
     Matrix(const Matrix &m);
+    Matrix<T> operator=(const Matrix& m);
 
     std::string toString() const;
 
@@ -29,7 +31,6 @@ public:
     int getColumn() const;
 
     Matrix<T> transpose() const;
-    Matrix<T> operator=(const Matrix& m);
     Matrix<T> operator*(const Matrix& m) const;
     Matrix<T> operator*(const T& num) const;
     Matrix<T> operator+(const Matrix& m) const;
@@ -55,15 +56,28 @@ Matrix<T>::~Matrix() {
 }
 
 template<typename T>
-Matrix<T>::Matrix(const Matrix<T> &m) {
+void Matrix<T>::copy(const Matrix<T> &m) {
     rows = m.rows;
     columns = m.columns;
-
+    //delete[] buffer;
     buffer = new T[rows * columns];
 
-    //inizialize the second matrix for operations
     for (int i = 0; i < rows * columns; i++)
         buffer[i] = m.buffer[i];
+}
+
+template<typename T>
+Matrix<T>::Matrix(const Matrix<T> &m) {
+    copy(m);
+}
+
+template<typename T>
+Matrix<T> Matrix<T>::operator=(const Matrix<T> &m) {
+    if (&m != this) {
+        copy(m);
+        return *this;
+    }
+    return *this;
 }
 
 template<typename T>
@@ -154,20 +168,6 @@ Matrix<T> Matrix<T>::transpose() const{
         }
     }
     return transposedMatrix;
-}
-
-template<typename T>
-Matrix<T> Matrix<T>::operator=(const Matrix<T> &m) {
-    if (&m != this) {
-        rows = m.rows;
-        columns = m.columns;
-        delete[] buffer;
-        buffer = new T[rows * columns];
-        for (int i = 0; i < rows * columns; i++)
-            buffer[i] = m.buffer[i];
-        return *this;
-    }
-    return *this;
 }
 
 template<typename T>
