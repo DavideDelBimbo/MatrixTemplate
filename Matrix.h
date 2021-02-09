@@ -59,7 +59,6 @@ template<typename T>
 void Matrix<T>::copy(const Matrix<T> &m) {
     rows = m.rows;
     columns = m.columns;
-    //delete[] buffer;
     buffer = new T[rows * columns];
 
     for (int i = 0; i < rows * columns; i++)
