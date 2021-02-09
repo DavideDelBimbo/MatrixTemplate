@@ -73,6 +73,7 @@ Matrix<T>::Matrix(const Matrix<T> &m) {
 template<typename T>
 Matrix<T> Matrix<T>::operator=(const Matrix<T> &m) {
     if (&m != this) {
+        delete[] buffer;
         copy(m);
         return *this;
     }
