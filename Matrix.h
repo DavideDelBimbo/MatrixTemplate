@@ -12,11 +12,11 @@ class Matrix{
 private:
     int rows, columns;
     T *buffer;
+    void copy(const Matrix &m);
 
 public:
     Matrix(int r, int c);
     ~Matrix();
-    void copy(const Matrix &m);
     Matrix(const Matrix &m);
     Matrix<T> operator=(const Matrix& m);
 
